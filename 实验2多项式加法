@@ -8,15 +8,15 @@ struct LinkNode
 	int exp;
 	struct LinkNode* next;
 };
-void Linkcreate(LinkNode*& L,int c, int e)
+void Linkcreate(LinkNode*& L, int c, int e)
 {
-	LinkNode* s,*p;
+	LinkNode* s, * p;
 	s = (LinkNode*)malloc(sizeof(LinkNode));
 	if (s == nullptr)exit(0);
-	p = L; 
+	p = L;
 	s->coef = c;
 	s->exp = e;
-	if(L->next==NULL)
+	if (L->next == NULL)
 	{
 		L->next = s;
 		s->next = NULL;
@@ -28,9 +28,9 @@ void Linkcreate(LinkNode*& L,int c, int e)
 			p = p->next;
 			if (p->next == NULL)break;
 		}
-		if (p->exp == s->exp)cout << "重复输入请退出重进" << endl;
+		if (p->next->exp == s->exp)cout << "重复输入请退出重进" << endl;
 		if (p->next == NULL) { p->next = s; s->next = NULL; }
-		if(p->next->exp < s->exp)
+		if (p->next->exp < s->exp)
 		{
 			s->next = p->next;
 			p->next = s;
@@ -40,8 +40,8 @@ void Linkcreate(LinkNode*& L,int c, int e)
 void Linkadd(LinkNode*& L, LinkNode* s)
 {
 	LinkNode* p = L, * q = s; int a;
-	if (s == NULL) { cout << "第二个多项式不可为空"; cin >> a; }
-	while(1)
+	if (s == NULL) { cout << "第二个多项式不可为空,请退出重开"; cin >> a; }
+	while (1)
 	{
 		if (p->next->exp == s->next->exp)
 		{
@@ -49,7 +49,7 @@ void Linkadd(LinkNode*& L, LinkNode* s)
 			s = s->next;
 			p = p->next;
 		}
-		else if(p->next->exp < s->next->exp)
+		else if (p->next->exp < s->next->exp)
 		{
 			s = s->next;
 		}
@@ -59,27 +59,34 @@ void Linkadd(LinkNode*& L, LinkNode* s)
 		}
 		if (s->next == NULL)break;
 	}
-	while (q->next!=NULL)
+	while (q->next != NULL)
 	{
 		Linkcreate(L, q->next->coef, q->next->exp);
 		q->next = q->next->next;
 	}
-	
+
 }
 void DispList(LinkNode* L)
 {
 	LinkNode* p = L->next;
+	if (p == NULL)cout << "0";
+	if (p->coef == 0 && p->next == NULL) { p = NULL; cout << "0"; }
 	while (p != NULL)
 	{
-		if(p->next==NULL)cout << p->coef << "x^" << p->exp<< endl;
-		else cout << p->coef<<"x^" << p->exp<<"+" << endl;
+		if(p->coef==0)
+		{
+			p = p->next;
+			continue;
+		}
+		if (p->next == NULL)cout << p->coef << "x^" << p->exp << endl;
+		else cout << p->coef << "x^" << p->exp << "+" << endl;
 		p = p->next;
 	}
 	cout << endl;
 }
 int main()
 {
-	LinkNode* L,*s;
+	LinkNode* L, * s;
 	L = (LinkNode*)malloc(sizeof(LinkNode)); if (L == nullptr)exit(0);
 	L->next = NULL;
 
@@ -91,7 +98,7 @@ int main()
 		cout << "请输入d=第一个多项式的项系数和底数(输入0结束）" << endl;
 		cin >> coef;
 		if (coef == 0)break;
-		cin>> exp;
+		cin >> exp;
 		Linkcreate(L, coef, exp);
 	}
 	while (1)

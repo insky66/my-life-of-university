@@ -1,0 +1,111 @@
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+typedef int ElemType;
+
+void CreateListF(LinkNode* &L, ElemType a[], int n)
+{
+	LinkNode* s;
+	L = (LinkNode*)malloc(sizeof(LinkNode));
+	if (L == nullptr)cout << "链表内存分配失败1" << endl;
+	else
+	{
+		L->next = NULL;
+		for (int i = 0; i < n; i++)
+		{
+			s = (LinkNode*)malloc(sizeof(LinkNode));
+			if (s == nullptr)cout << "链表内存分配失败2" << endl;
+			else
+			{
+				s->data = a[i];
+				s->next = L->next;
+				L->next = s;
+			}
+		}
+	}
+}
+void CreateListR(LinkNode*& L, ElemType a[], int n)
+{
+	LinkNode* s, *r;
+	L = (LinkNode*)malloc(sizeof(LinkNode));
+	if (L == nullptr)cout << "链表内存分配失败3" << endl;
+	else {
+		r = L;
+		for (int i = 0; i < n; i++)
+		{
+			s = (LinkNode*)malloc(sizeof(LinkNode));
+			if (s == nullptr)cout << "链表内存分配失败4" << endl;
+			else {
+				s->data = a[i];
+				r->next = s;
+				r = s;
+			}
+			
+		}
+		r->next = NULL;
+	}
+}
+void InitList(LinkNode*& L)
+{
+	L = (LinkNode*)malloc(sizeof(LinkNode));
+	if (L == nullptr)cout << "链表内存分配错误5" << endl;
+	else {
+		L->next = NULL;
+	}
+}
+void DestroyLink(LinkNode*& L)
+{
+	LinkNode* pre = L, * p = L->next;
+	while (p != NULL);
+	{
+		free(pre);
+		pre = p;
+		p = pre->next;
+	}
+	free(pre);
+}
+bool ListEmpty(LinkNode* L)
+{
+	return (L->next == NULL);
+}
+int ListLength(LinkNode* L)
+{
+	int n = 0;
+	LinkNode* p = L;
+	while (p->next != NULL)
+	{
+		n++;
+		p = p->next;
+	}
+	return n;
+}
+void DispList(LinkNode* L)
+{
+	LinkNode* p = L->next;
+	while (p != NULL)
+	{
+		cout << p->data;
+		p = p->next;
+	}
+	cout << endl;
+}
+bool GetElem(LinkNode* L, int i, ElemType&e)
+{
+	int j = 0;
+	LinkNode * p = L;
+	if (i <= 0)return false;
+	while (j < i && p != NULL)
+	{
+		j++;
+		p = p->next;
+	}
+	if (p == NULL)
+		return false;
+	else
+	{
+		e = p->data;
+		return true;
+	}
+}
+
+

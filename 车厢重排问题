@@ -1,0 +1,152 @@
+#include "stdio.h"
+#include <cstdlib>
+#include <iostream>
+using namespace std;
+typedef int ElemType;
+#define MaxSize 50
+typedef struct
+{
+    ElemType data[MaxSize];
+    int front, rear;
+}SqQueue;
+void InitQueue(SqQueue*& q)
+{
+    q = (SqQueue*)malloc(sizeof(SqQueue));
+    q->front = q->rear = -1;
+}
+void DestroyQueue(SqQueue*& q)
+{
+    free(q);
+}
+bool QueueEmpty(SqQueue* q)
+{
+    return(q->front == q->rear);
+}
+bool enQueue(SqQueue*& q, ElemType e)
+{
+    if (q->rear == MaxSize - 1)
+    return false;
+    q->rear++;
+    q->data[q->rear] = e;
+    return true;
+}
+bool deQueue(SqQueue*& q, ElemType &e)
+{
+    if (q->front == q->rear)return false;
+    q->front++;
+    e = q->data[q->front];
+    return true;
+}
+
+int GetFront(SqQueue* q, ElemType& e)
+{
+    if (q->rear == q->front)return false;
+    e = q->data[q->front + 1];
+    return true;
+}
+int GetRear(SqQueue* q, ElemType& e)
+{
+    if (q->front == q->rear)return false;
+    e = q->data[q->rear];
+}
+void printQueue(SqQueue* q)
+{
+    int e = 0; int f = q->front;
+    while (!QueueEmpty(q))
+    {
+        deQueue(q, e);
+        cout << e<<' ';
+    }
+    cout << endl;
+    q->front = f;
+}
+int main()
+{
+    SqQueue* p, * q, * a[50];
+    InitQueue(p);
+    InitQueue(q);
+    int t = 0;//记录缓存队列
+    int nowOut = 1;
+    int n = 0, m = 0;
+    cout << "请输入车厢数" << endl;
+    cin >> n;
+    cout << "请输入车厢号" << endl;
+    for (int i = 0; i < n; i++)
+    {
+        cin >> m;
+        enQueue(p, m);
+    }
+    int e = 0; int c = 0;
+     while (q->rear-q->front!=n)
+    {
+        c = 0;
+        GetFront(p, e);
+        if (e == nowOut)
+        {
+            deQueue(p, e);
+            enQueue(q, e);
+            nowOut++;
+            continue;
+        }
+        else
+        {
+            for (int j = 0; j < t; j++)
+            {
+                int e2 = 0;
+                if (!QueueEmpty(a[j]))
+                    GetFront(a[j], e2);
+                else continue;
+                if (e2 == nowOut)
+                {
+                    deQueue(a[j], e2);
+                    enQueue(q, e2);
+                    nowOut++;
+                    c = 1;
+                    break;
+                }
+            }
+        }
+        if (c == 0)
+        {
+            int t2 = -1; int t3 = 0; int r1=0,r2=0;
+            for (int i = 1; i < t; i++)
+            {
+                GetRear(a[i], r1);
+                if (r1 < e && r2 < r1)
+                {
+                    r2 = r1;
+                    t2 = i;
+                    t3 = 1;
+                }
+            }
+            if (t3 == 1)
+            {
+                enQueue(a[t2], e);
+                deQueue(p, e);
+            }
+            else
+            {
+                InitQueue(a[t]);
+                enQueue(a[t], e);
+                deQueue(p, e);
+                t++;
+            }
+
+        }
+    }
+    printQueue(q);
+    return 0;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+

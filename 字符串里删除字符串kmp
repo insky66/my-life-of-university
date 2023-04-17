@@ -1,0 +1,91 @@
+#include <cstdlib>
+#include <iostream>
+using namespace std;
+#define MaxSize 50
+typedef struct
+{
+	char data[MaxSize];
+	int length;
+}SqString;
+void DisString(SqString s)
+{
+	for (int i = 0; i < s.length; i++)
+		cout << s.data[i];
+	cout << endl;
+}
+void GetNext(SqString t,int next[])
+{
+	int j=0, k=-1;
+	next[0] = -1;
+	while (j < t.length - 1)
+	{
+		if (k == -1 || t.data[j] == t.data[k])
+		{
+			j++; k++;
+			next[j] = k;
+		}
+		else k = next[k];
+	}
+}
+void DeleteString(SqString s, SqString t)
+{
+	int next[MaxSize] = { 0 }, i = 0, j = 0; int m = -1;
+	GetNext(t, next);
+	while (1)
+	{
+		j = 0;
+		while (i < s.length && j < t.length)
+		{
+			if (j == -1 || s.data[i] == t.data[j])
+			{
+				i++; j++;
+			}
+			else j = next[j];
+			
+			if (j >= t.length )break;
+		}
+		if (j >= t.length)
+		{
+			int k = i - t.length;
+			i = 0;
+			for (; k + t.length <= s.length ; k++)
+			{
+				
+				s.data[k] = s.data[k + t.length];
+			}
+			s.length -= t.length;
+		}
+		else
+		{
+			m = 1;
+		}
+		{
+			if (m == 1)break;
+			
+		}
+		
+	}
+	DisString(s);
+}
+
+
+
+
+int main() 
+{
+	SqString s1,s2;
+	cout << "请输入字符串长度" << endl;
+	cin >> s1.length;
+	cout << "请输入字符串" << endl;
+	for (int i = 0; i < s1.length; i++)
+		cin >> s1.data[i];
+	cout << "请输入要删除的字符串长度" << endl;
+	cin >> s2.length;
+	cout << "请输入要删除的字符串" << endl;
+	for (int i = 0; i < s2.length; i++)
+		cin >> s2.data[i];
+	DisString(s1);
+	DisString(s2);
+	DeleteString(s1, s2);
+	return 0;
+}

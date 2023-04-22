@@ -1,0 +1,89 @@
+#include <iostream>
+using namespace std;
+#define MaxSize 50
+typedef char ElemType;
+typedef struct node
+{
+	ElemType data;
+	struct node* lchild;
+	struct node* rchild;
+}BTNode;
+void CreateBTree(BTNode*& b, char* str)
+{
+	BTNode* St[MaxSize], * p;
+	int top = -1, k=0, j = 0;
+	char ch='\0';
+	ch = str[j];
+	p = (BTNode*)malloc(sizeof(BTNode));
+	while (ch != '\0')
+	{
+		switch (ch)
+		{
+		case '(':top++; St[top] = p; k = 1; break;
+		case ')':top--; break;
+		case ',':k = 2; break;
+		default:
+			if (b != NULL)
+			{
+				p = (BTNode*)malloc(sizeof(BTNode));
+			}
+			p->data = ch;
+			p->lchild = p->rchild = NULL;
+			if (b == NULL)
+			{
+				b = p;
+			}
+			else
+			{
+				switch (k)
+				{
+				case 1:St[top]->lchild = p; break;
+				case 2:St[top]->rchild = p; break;
+				}
+			}
+		}
+		j++;
+		ch = str[j];
+	}
+}
+void DispBTree(BTNode* b)
+{
+	if (b != NULL)
+	{
+		printf_s("%c", b->data);
+		if (b->lchild != NULL || b->rchild != NULL)
+		{
+			printf_s("(");
+			DispBTree(b->lchild);
+			if (b->rchild != NULL)printf_s(",");
+			DispBTree(b->rchild);
+			printf_s(")");
+		}
+	}
+}
+int together(BTNode* b)
+{
+	static int n = 0;
+	if (b->lchild != NULL)
+	{
+		n++;
+		together(b->lchild);
+	}
+	if (b->rchild != NULL)
+	{
+		n++;
+		together(b->rchild);
+	}
+	return n;
+}
+int main()
+{
+	BTNode* b = nullptr; int n = 0;
+	char str[MaxSize] = { '\0' };
+	cin >> str;
+	CreateBTree(b, str);
+	DispBTree(b);
+	n = together(b)+1;
+	cout << n << endl;
+	return 0;
+}

@@ -1,0 +1,208 @@
+#include <iostream>
+using namespace std;
+typedef int ElemType;
+#define MaxSize 50
+typedef struct
+{
+    ElemType data[MaxSize];
+    int front, rear;
+}SqQueue;
+void InitQueue(SqQueue*& q)
+{
+    q = (SqQueue*)malloc(sizeof(SqQueue));
+    q->front = q->rear = -1;
+}
+void DestroyQueue(SqQueue*& q)
+{
+    free(q);
+}
+bool QueueEmpty(SqQueue* q)
+{
+    return(q->front == q->rear);
+}
+bool enQueue(SqQueue*& q, ElemType e)
+{
+    if (q->rear == MaxSize - 1)
+        return false;
+    q->rear++;
+    q->data[q->rear] = e;
+    return true;
+}
+bool deQueue(SqQueue*& q, ElemType& e)
+{
+    if (q->front == q->rear)return false;
+    q->front++;
+    e = q->data[q->front];
+    return true;
+}
+int GetFront(SqQueue* q, ElemType& e)
+{
+    if (q->rear == q->front)return false;
+    e = q->data[q->front + 1];
+    return true;
+}
+int GetRear(SqQueue* q, ElemType& e)
+{
+    if (q->front == q->rear)return false;
+    e = q->data[q->rear];
+}
+void printQueue(SqQueue* q)
+{
+    int e = 0; int f = q->front;
+    while (!QueueEmpty(q))
+    {
+        deQueue(q, e);
+        cout << e << ' ';
+    }
+    cout << endl;
+    q->front = f;
+}
+#define INF 32767
+typedef struct ANode
+{
+    int adjvex;//邻接点编号
+    struct ANode* nextarc;
+    int weight;
+}ArcNode;//边结点
+typedef struct Vnode
+{
+    ArcNode* firstarc;
+}VNode;//头结点
+typedef struct
+{
+    VNode adjlist[MaxSize];//邻接表的头结点数组
+    int n, e;//n为顶点数，e为边数
+}AdjGraph; //图邻接表
+void CreateAdj(AdjGraph*& G, int A[MaxSize][MaxSize], int n, int e)
+{
+    int i, j; ArcNode* p;
+    G = (AdjGraph*)malloc(sizeof(AdjGraph));
+    for (i = 0; i < n; i++)
+        G->adjlist[i].firstarc = NULL;
+    for (i = 0; i < n; i++)
+    {
+        for (j = n - 1; j >= 0; j--)
+        {
+            if (A[i][j] != 0 && A[i][j] != INF)
+            {
+                p = (ArcNode*)malloc(sizeof(ArcNode));
+                p->adjvex = j;
+                p->weight = A[i][j];
+                p->nextarc = G->adjlist[i].firstarc;
+                G->adjlist[i].firstarc = p;
+            }
+        }
+    }
+    G->n = n; G->e = e;
+}
+void DispAdj(AdjGraph* G)
+{
+    int i; ArcNode* p;
+    for (i = 0; i < G->n; i++)
+    {
+        p = G->adjlist[i].firstarc;
+        printf_s("%3d: ", i);
+        while (p != NULL)
+        {
+            printf_s("%3d[%d]->", p->adjvex, p->weight);
+            p = p->nextarc;
+        }
+        printf_s("\n");
+    }
+}
+
+int B[MaxSize][MaxSize] = { 0 };//深度优先生成树邻接表
+int visited[MaxSize] = { 0 };
+void DFS(AdjGraph* G, int v)//把深度优先遍历改为输出深度优先生成树的邻接表
+{
+    ArcNode* p;
+    visited[v] = 1;
+    printf_s("%2d", v);
+    p = G->adjlist[v].firstarc;
+    while (p != NULL)
+    {
+        if (visited[p->adjvex] == 0)
+        {
+            B[v][p->adjvex] = 1;//仅改此处即可。
+            DFS(G, p->adjvex);
+        }
+        p = p->nextarc;
+    }
+}
+
+int C[MaxSize][MaxSize] = { 0 };//广度优先生成树邻接表
+void BFS(AdjGraph* G, int v)//将图的广度优先遍历改为输出广度优先生成树
+{
+    int w, i; ArcNode* p;
+    SqQueue* qu;
+    InitQueue(qu);
+    int visited2[MaxSize];
+    for (i = 0; i < G->n; i++)
+    {
+        visited2[i] = 0;
+    }
+    printf("%2d", v);
+    visited2[v] = 1;
+    enQueue(qu, v);
+    while (!QueueEmpty(qu))
+    {
+        deQueue(qu, w);
+        p = G->adjlist[w].firstarc;
+        while (p != NULL)
+        {
+            if (visited2[p->adjvex] == 0)
+            {
+                printf("%2d", p->adjvex);
+                C[w][p->adjvex] = p->weight;//仅改此处即可
+                visited2[p->adjvex] = 1;
+                enQueue(qu, p->adjvex);
+            }
+            p = p->nextarc;
+        }
+    }
+    printf("\n");
+}
+int main()
+{
+    int n, e;
+    int A[MaxSize][MaxSize] = { 0 };
+    printf_s("请输入图的顶点数\n");
+    cin >> n;
+    printf_s("请输入图的边数\n");
+    cin >> e;
+    printf_s("请输入图的临界矩阵\n");
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            cin>>A[i][j];
+        }
+    }
+    printf_s("图的临界矩阵为：\n");
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            cout << A[i][j] << " ";
+        }
+        cout << endl;
+    }
+    AdjGraph* G,*M,*N;
+    CreateAdj(G, A, n, e);
+    printf_s("图的邻接表为：\n");
+    DispAdj(G);
+    printf_s("图的深度优先遍历为：\n");
+    DFS(G, 1);
+    cout << endl;
+    printf_s("输出生成深度优先生成树的邻接表\n");
+    CreateAdj(M, B, n, e);
+    DispAdj(M);
+    cout << endl;
+    printf_s("图的广度优先遍历为：\n");
+    BFS(G, 0);    
+    printf_s("输出生成广度度优先生成树的邻接表\n");
+    CreateAdj(N, C, n, e);
+    DispAdj(N);
+
+    return 0;
+}

@@ -1,0 +1,168 @@
+#include "stdio.h"
+#include <cstdlib>
+#include <iostream>
+using namespace std;
+typedef struct BiTNode {
+    int a=NULL;
+    struct BiTNode* lchild=NULL, * rchild=NULL;
+}BiTNode;
+bool add(BiTNode*& BT,int a)//插入
+{
+    if (BT == NULL)
+    {
+        BT = new(BiTNode);
+        BT->a = a;
+        return true;
+    }
+    else
+    {
+        BiTNode* p,*q;
+        q = BT;
+        p = new(BiTNode);
+        p->a = a;
+        while(1)
+        {
+            if (a < q->a)
+            {
+                if (q->lchild == NULL)
+                {
+                    q->lchild = p;
+                    return true;
+                }
+                q = q->lchild;
+            }
+            if (a > q->a)
+            {
+                if (q->rchild == NULL)
+                {
+                    q->rchild = p;
+                    return true;
+                }
+                q = q->rchild;
+            }
+
+        }
+        
+    }
+
+}
+void DispBT(BiTNode* BT) //二叉树先序遍历
+{
+    if (BT != NULL)
+    {
+        cout << BT->a << " ";
+        DispBT(BT->lchild);
+        DispBT(BT->rchild);
+    }
+    
+}
+bool searchBT2(BiTNode* BT, int a)
+{   
+    if (BT != NULL)
+    {
+        if (a == BT->a)
+        {
+            cout << "查找成功" << endl;
+            return false;
+        }
+        searchBT2(BT->lchild,a);
+        searchBT2(BT->rchild,a);
+    }
+  
+}
+void searchBT(BiTNode* BT,int a)
+{
+    int t = searchBT2(BT,a);
+    if (t == 1)cout << "查找失败" << endl;
+}
+void delBT(BiTNode*& BT, int a)
+{
+    BiTNode* p, * q; int t = 0;
+    p = q = BT;
+    while (p->a!=a)//查找a的位置，q为p的双亲结点
+    {
+        if (a < p->a)
+        {
+            q = p;
+            p = p->lchild;
+            t = 1;
+        }
+        if (a < p->a)
+        {
+            q = p;
+            p = p->lchild;
+            t = 1;
+        }
+        if (p->lchild == NULL && p->rchild == NULL)break;
+    }
+    if (t == 0)cout << "删除失败，找不到" << endl;
+    else
+    {
+        if (p->lchild == NULL && p->rchild == NULL)//叶子结点删除
+        {
+            if (q->lchild == p)q->lchild = NULL;
+            else q->rchild = NULL;
+            free(p);
+        }
+        if (p->lchild != NULL && p->rchild == NULL)//只有左子树
+        {
+            if (q->lchild == p)q->lchild = p->lchild;
+            else q->rchild = p->lchild;
+            free(p);
+        }
+        if (p->lchild == NULL && p->rchild != NULL)//只有右子树
+        {
+            if (q->lchild == p)q->lchild = p->rchild;
+            else q->rchild = p->rchild;
+            free(p);
+        }
+
+
+        if (p->lchild != NULL && p->rchild != NULL)//既有左子树又有右子树
+        {
+            BiTNode* s = p->rchild;
+            q = p;
+            while (s->lchild != NULL)
+            {
+                p = s;
+                s = s->lchild;
+            }
+            q->a = s->a;
+            if(q->rchild->lchild==NULL)
+            {
+                p->rchild = s->rchild;
+                free(s);
+            }
+            else
+            {
+                p->lchild = s->rchild;
+                free(s);
+            }
+        }
+
+    }
+}
+
+int main()
+{
+    BiTNode* BT=NULL;
+    add(BT, 5);   
+    add(BT, 3);    
+    add(BT, 7); 
+    add(BT, 9); 
+    add(BT, 8); 
+    add(BT, 4);
+    add(BT, 1);
+    add(BT, 2); 
+    add(BT, 6); 
+    DispBT(BT); 
+    searchBT(BT, 10);
+    delBT(BT, 3);
+    cout << endl;
+    DispBT(BT);
+
+
+
+    return 0;
+
+}
